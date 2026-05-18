@@ -1,0 +1,40 @@
+# =============================================================================
+# FoodDiary — Frontend Dockerfile (Multi-Stage Build)
+# frontend/Dockerfile
+#
+# Stage 1 (builder): Node.js + Vite compiles the React app → /app/dist
+# Stage 2 (runner):  Nginx serves the compiled static files
+#
+# Final image has ZERO Node.js — only a tiny Nginx Alpine (~25MB)
+# =============================================================================
+
+# ── Stage 1: Build ────────────────────────────────────────────────────────────
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Cache dependencies separately from source code
+COPY package*.json ./
+RUN npm ci
+
+# Copy source and compile
+COPY . .
+RUN npm run build
+# Output: /app/dist  (Vite default)
+
+# ── Stage 2: Serve ────────────────────────────────────────────────────────────
+FROM nginx:1.25-alpine AS runner
+
+# Remove default Nginx static assets
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy compiled React SPA from builder stage
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Nginx config: critical for React Router (client-side routing)
+# Without this, refreshing /my-todo-list returns 404 from Nginx
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

@@ -1,0 +1,33 @@
+# =============================================================================
+# FoodDiary — Backend Dockerfile
+# backend/Dockerfile
+# Node.js 20 LTS (Alpine for minimal image size)
+# =============================================================================
+
+FROM node:20-alpine
+
+# Install dumb-init for proper PID 1 signal handling in containers
+RUN apk add --no-cache dumb-init
+
+WORKDIR /app
+
+# Copy dependency manifests first (Docker layer cache optimization)
+# If package.json doesn't change, this layer is reused on rebuilds
+COPY package*.json ./
+
+# Clean install — respects package-lock.json exactly
+RUN npm ci --only=production
+
+# Copy application source
+COPY . .
+
+# Non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodeuser -u 1001 -G nodejs
+USER nodeuser
+
+EXPOSE 4000
+
+# dumb-init wraps node to handle SIGTERM gracefully (clean Docker stop)
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "src/index.js"]
