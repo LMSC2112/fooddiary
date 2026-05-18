@@ -1,0 +1,80 @@
+# =============================================================================
+# FoodDiary — Docker Compose Orchestrator
+# docker-compose.yml  (root of monorepo)
+#
+# Three services:
+#   database  — PostgreSQL 16 with persistent volume
+#   backend   — Node.js/Express API (depends on database being healthy)
+#   frontend  — Nginx serving the compiled Vite/React SPA
+#
+# Usage:
+#   docker-compose up --build       # first run / after code changes
+#   docker-compose up               # subsequent runs (uses cached images)
+#   docker-compose down -v          # stop and wipe DB volume
+# =============================================================================
+
+services:
+
+  # ── Database ────────────────────────────────────────────────────────────────
+  database:
+    image: postgres:16-alpine
+    container_name: fooddiary_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB}
+      POSTGRES_USER:     ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      # Persistent data: survives container restarts
+      - postgres_data:/var/lib/postgresql/data
+      # Auto-run init.sql on first boot (only when volume is empty)
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      # Exposed for local DB clients (TablePlus, DBeaver) — remove in production
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ── Backend ─────────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fooddiary_api
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy   # waits for DB healthcheck to pass
+    environment:
+      NODE_ENV:      ${NODE_ENV}
+      PORT:          ${PORT}
+      DATABASE_URL:  postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
+      JWT_SECRET:    ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      MEALDB_BASE_URL: https://www.themealdb.com/api/json/v1/1
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      # Hot-reload in development (remove for production)
+      - ./backend/src:/app/src:ro
+
+  # ── Frontend ────────────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: fooddiary_web
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+# ── Volumes ─────────────────────────────────────────────────────────────────
+volumes:
+  postgres_data:
+    driver: local
