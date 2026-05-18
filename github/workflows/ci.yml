@@ -1,0 +1,122 @@
+# .github/workflows/ci.yml
+# FoodDiary — Continuous Integration Pipeline
+#
+# Triggers: every push and pull_request to main or develop.
+# Jobs run in parallel but frontend waits for backend to pass first.
+#
+# What breaks the build:
+#   - Any Prettier formatting violation
+#   - Any failing test (Vitest)
+#   - Any npm dependency installation error
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+# Cancel in-progress runs when a new push arrives on the same branch
+# (avoids wasting CI minutes on outdated commits)
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# ── Job 1: Backend ────────────────────────────────────────────────────────────
+jobs:
+  backend:
+    name: Backend — Format & Test
+    runs-on: ubuntu-latest
+
+    # Spin up a real PostgreSQL service container for integration tests
+    # (not strictly needed since we mock pg, but good practice for future tests)
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: fooddiary_test
+          POSTGRES_USER: fooddiary_user
+          POSTGRES_PASSWORD: test_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    # Environment variables available to all steps in this job
+    env:
+      DATABASE_URL: postgresql://fooddiary_user:test_password@localhost:5432/fooddiary_test
+      JWT_SECRET: ci_test_secret_minimum_32_characters_long
+      JWT_EXPIRES_IN: 1d
+      NODE_ENV: test
+      PORT: 4000
+
+    steps:
+      # Step 1 — Download the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2 — Install Node.js 20 LTS
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          # Cache npm dependencies — speeds up subsequent runs significantly
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
+
+      # Step 3 — Clean install (respects package-lock.json exactly)
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      # Step 4 — Prettier format check
+      # Exits with code 1 if any file is not properly formatted → breaks the build
+      - name: Check code formatting (Prettier)
+        working-directory: backend
+        run: npx prettier --check "src/**/*.js"
+
+      # Step 5 — Run the test suite
+      # Exits with code 1 if any test fails → breaks the build
+      - name: Run backend tests (Vitest)
+        working-directory: backend
+        run: npm test
+
+  # ── Job 2: Frontend ──────────────────────────────────────────────────────────
+  frontend:
+    name: Frontend — Format & Test
+    runs-on: ubuntu-latest
+    # Only runs if the backend job passed — no point testing the frontend
+    # if the API it depends on is already broken
+    needs: backend
+
+    steps:
+      # Step 1 — Download the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2 — Install Node.js 20 LTS
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      # Step 3 — Clean install
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      # Step 4 — Prettier format check on TypeScript files
+      - name: Check code formatting (Prettier)
+        working-directory: frontend
+        run: npx prettier --check "src/**/*.{ts,tsx}"
+
+      # Step 5 — Run the calculator hook tests
+      - name: Run frontend tests (Vitest)
+        working-directory: frontend
+        run: npm test
