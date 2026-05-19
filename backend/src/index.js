@@ -41,8 +41,11 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 // ── Start ─────────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`[FoodDiary API] Running on port ${PORT} — ${process.env.NODE_ENV} mode`);
-});
+// Only start listening if this file is run directly (not imported by tests)
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`[FoodDiary API] Running on port ${PORT} — ${process.env.NODE_ENV} mode`);
+  });
+}
 
 export default app; // exported for test suite (Paso 4)
