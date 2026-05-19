@@ -29,10 +29,7 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
         {/* Brand */}
-        <Link
-          to="/"
-          className="font-lobster text-2xl text-brand-600 tracking-wide"
-        >
+        <Link to="/" className="font-lobster text-2xl text-brand-600 tracking-wide">
           FoodDiary
         </Link>
 
@@ -60,10 +57,7 @@ export default function Navbar() {
           {/* Anonymous state */}
           {!isAuthenticated && (
             <div className="flex items-center gap-3 text-sm">
-              <Link
-                to="/login"
-                className="text-gray-600 hover:text-brand-600 transition-colors"
-              >
+              <Link to="/login" className="text-gray-600 hover:text-brand-600 transition-colors">
                 {t("nav.login")}
               </Link>
               <Link

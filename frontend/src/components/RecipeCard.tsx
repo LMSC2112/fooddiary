@@ -69,6 +69,7 @@ export default function RecipeCard({
         api_recipe_id: recipe.source === "api" ? recipe.id : undefined,
         title: recipe.source === "api" ? recipe.title : undefined,
         image_url: recipe.source === "api" ? recipe.image_url : undefined,
+        category: recipe.source === "api" ? recipe.category : undefined, // ← NUEVO
       });
     } catch {
       // Revert optimistic update on failure
@@ -93,11 +94,7 @@ export default function RecipeCard({
         {/* Recipe image */}
         <Link to={`/recipe/${recipe.source}/${recipe.id}`}>
           {recipe.image_url ? (
-            <img
-              src={recipe.image_url}
-              alt={recipe.title}
-              className="w-full h-44 object-cover"
-            />
+            <img src={recipe.image_url} alt={recipe.title} className="w-full h-44 object-cover" />
           ) : (
             <div className="w-full h-44 bg-gray-100 flex items-center justify-center text-gray-300 text-4xl">
               🍽️
@@ -122,9 +119,7 @@ export default function RecipeCard({
           <p className="text-xs text-gray-400 mt-1">{recipe.authorLabel}</p>
 
           {/* Date label (planned / discarded / cooked) */}
-          {dateLabel && (
-            <p className="text-xs text-gray-400 mt-0.5">{dateLabel}</p>
-          )}
+          {dateLabel && <p className="text-xs text-gray-400 mt-0.5">{dateLabel}</p>}
 
           {/* Footer */}
           <div className="flex items-center justify-between mt-3">
@@ -153,9 +148,10 @@ export default function RecipeCard({
                   onClick={handleAddToTodo}
                   disabled={loading || added}
                   className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors
-                    ${added
-                      ? "bg-brand-600 text-white"
-                      : "bg-brand-50 text-brand-600 hover:bg-brand-100"
+                    ${
+                      added
+                        ? "bg-brand-600 text-white"
+                        : "bg-brand-50 text-brand-600 hover:bg-brand-100"
                     }`}
                   title={t("home.addToTodo")}
                 >

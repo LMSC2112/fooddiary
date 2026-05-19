@@ -17,13 +17,11 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(
-    localStorage.getItem("fooddiary_token") ||
-      sessionStorage.getItem("fooddiary_token")
+    localStorage.getItem("fooddiary_token") || sessionStorage.getItem("fooddiary_token")
   );
   const [user, setUser] = useState<User | null>(() => {
     const stored =
-      localStorage.getItem("fooddiary_user") ||
-      sessionStorage.getItem("fooddiary_user");
+      localStorage.getItem("fooddiary_user") || sessionStorage.getItem("fooddiary_user");
     return stored ? JSON.parse(stored) : null;
   });
 
@@ -52,9 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider
-      value={{ user, token, login, logout, isAuthenticated: !!token }}
-    >
+    <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated: !!token }}>
       {children}
     </AuthContext.Provider>
   );

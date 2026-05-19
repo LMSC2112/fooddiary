@@ -42,9 +42,7 @@ export default function MyTodoList() {
     if (!activeInteractionId) return;
 
     // Optimistic update — remove card immediately with animation
-    setInteractions((prev) =>
-      prev.filter((i) => i.interaction_id !== activeInteractionId)
-    );
+    setInteractions((prev) => prev.filter((i) => i.interaction_id !== activeInteractionId));
     setModalOpen(false);
 
     try {
@@ -79,7 +77,8 @@ export default function MyTodoList() {
                 id: interaction.local_recipe_id || interaction.api_recipe_id || "",
                 source: (interaction.local_recipe_id ? "local" : "api") as "local" | "api",
                 title: interaction.title || interaction.api_recipe_title || "Recipe",
-                category: interaction.category || "Miscellaneous",
+                category:
+                  interaction.category || interaction.api_recipe_category || "Miscellaneous",
                 image_url: interaction.image_url || interaction.api_recipe_image || null,
                 base_servings: interaction.base_servings || null,
                 serving_size: interaction.serving_size || null,

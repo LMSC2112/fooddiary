@@ -65,11 +65,7 @@ export default function MyCookbook() {
               : undefined;
 
             return (
-              <RecipeCard
-                key={interaction.interaction_id}
-                recipe={recipe}
-                dateLabel={dateLabel}
-              />
+              <RecipeCard key={interaction.interaction_id} recipe={recipe} dateLabel={dateLabel} />
             );
           })}
         </div>

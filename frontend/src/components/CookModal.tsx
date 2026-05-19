@@ -53,9 +53,7 @@ export default function CookModal({
             <h2 className="text-lg font-semibold text-gray-900 text-center mb-1">
               {t("modal.title")}
             </h2>
-            <p className="text-sm text-gray-500 text-center mb-6">
-              {t("modal.subtitle")}
-            </p>
+            <p className="text-sm text-gray-500 text-center mb-6">{t("modal.subtitle")}</p>
 
             <div className="flex flex-col gap-3">
               <button

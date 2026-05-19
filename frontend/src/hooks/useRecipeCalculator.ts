@@ -58,9 +58,7 @@ export function computeScaleFactor(
   return desiredServings / safeBase;
 }
 
-export function needsFallback(
-  baseServings: number | null | undefined
-): boolean {
+export function needsFallback(baseServings: number | null | undefined): boolean {
   return baseServings === null || baseServings === undefined || baseServings <= 0;
 }
 
@@ -108,12 +106,22 @@ export function scaleAndConvertIngredient(
 
   if (ingredient.baseUnit === "g") {
     const { quantity, unit } = convertGramsToAmerican(scaledQuantity);
-    return { id: ingredient.id, name: ingredient.name, displayQuantity: quantity, displayUnit: unit };
+    return {
+      id: ingredient.id,
+      name: ingredient.name,
+      displayQuantity: quantity,
+      displayUnit: unit,
+    };
   }
 
   if (ingredient.baseUnit === "ml") {
     const { quantity, unit } = convertMlToAmerican(scaledQuantity);
-    return { id: ingredient.id, name: ingredient.name, displayQuantity: quantity, displayUnit: unit };
+    return {
+      id: ingredient.id,
+      name: ingredient.name,
+      displayQuantity: quantity,
+      displayUnit: unit,
+    };
   }
 
   // Non-convertible units (e.g. "unidad", "diente") — scale only

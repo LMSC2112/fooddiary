@@ -17,7 +17,12 @@ export default function Home() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState<PaginationMeta>({ page: 1, limit: 30, totalLocal: 0, totalApi: 0,});
+  const [pagination, setPagination] = useState<PaginationMeta>({
+    page: 1,
+    limit: 30,
+    totalLocal: 0,
+    totalApi: 0,
+  });
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterType>("all");
 
@@ -49,8 +54,8 @@ export default function Home() {
     setPage(1);
   }
 
-    const hasMore =
-      (pagination.totalLocal ?? 0) + (pagination.totalApi ?? 0) > page * pagination.limit;
+  const hasMore =
+    (pagination.totalLocal ?? 0) + (pagination.totalApi ?? 0) > page * pagination.limit;
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
@@ -74,10 +79,7 @@ export default function Home() {
       </div>
 
       {/* Category carousel */}
-      <CategoryCarousel
-        selected={selectedCategory}
-        onSelect={handleCategorySelect}
-      />
+      <CategoryCarousel selected={selectedCategory} onSelect={handleCategorySelect} />
 
       {/* Recipe grid — 1 col mobile, 2 tablet, 3 desktop */}
       {loading ? (

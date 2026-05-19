@@ -45,8 +45,9 @@ export interface Interaction {
   interaction_id: string;
   local_recipe_id: string | null;
   api_recipe_id: string | null;
-  api_recipe_title?: string; 
-  api_recipe_image?: string | null; 
+  api_recipe_title?: string;
+  api_recipe_image?: string | null;
+  api_recipe_category?: string | null;
   en_todo_list: boolean;
   en_recetario: boolean;
   created_at: string;

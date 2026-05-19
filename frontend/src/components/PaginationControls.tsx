@@ -27,9 +27,10 @@ export default function PaginationControls({
         onClick={onPrev}
         disabled={isFirst}
         className={`flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-medium transition-colors
-          ${isFirst
-            ? "opacity-30 cursor-not-allowed bg-gray-100 text-gray-400"
-            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+          ${
+            isFirst
+              ? "opacity-30 cursor-not-allowed bg-gray-100 text-gray-400"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
       >
         <FiChevronLeft size={16} />
@@ -44,9 +45,10 @@ export default function PaginationControls({
         onClick={onNext}
         disabled={!hasMore}
         className={`flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-medium transition-colors
-          ${!hasMore
-            ? "opacity-30 cursor-not-allowed bg-gray-100 text-gray-400"
-            : "bg-brand-600 text-white hover:bg-brand-700"
+          ${
+            !hasMore
+              ? "opacity-30 cursor-not-allowed bg-gray-100 text-gray-400"
+              : "bg-brand-600 text-white hover:bg-brand-700"
           }`}
       >
         {t("pagination.next")}

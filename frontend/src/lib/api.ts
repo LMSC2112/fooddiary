@@ -13,8 +13,7 @@ const api = axios.create({
 // Request interceptor — attach token if available
 api.interceptors.request.use((config) => {
   const token =
-    localStorage.getItem("fooddiary_token") ||
-    sessionStorage.getItem("fooddiary_token");
+    localStorage.getItem("fooddiary_token") || sessionStorage.getItem("fooddiary_token");
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
