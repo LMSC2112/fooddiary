@@ -23,6 +23,7 @@ export async function getTodoList(req, res, next) {
          i.fecha_estado_receta,
          i.api_recipe_title,
          i.api_recipe_image,
+         i.api_recipe_category,
          -- Local recipe fields (null if it's an API recipe)
          lr.title,
          lr.image_url,
@@ -61,6 +62,9 @@ export async function getCookbook(req, res, next) {
          i.en_recetario,
          i.created_at,
          i.fecha_estado_receta,
+         i.api_recipe_title,
+         i.api_recipe_image,
+         i.api_recipe_category,
          lr.title,
          lr.image_url,
          lr.category,
@@ -90,7 +94,7 @@ export async function getCookbook(req, res, next) {
 export async function addToTodo(req, res, next) {
   try {
     const userId = req.user.userId;
-    const { local_recipe_id, api_recipe_id, title, image_url } = req.body;
+    const { local_recipe_id, api_recipe_id, title, image_url, category } = req.body;
     // Validate: exactly one source must be provided
     if ((!local_recipe_id && !api_recipe_id) || (local_recipe_id && api_recipe_id)) {
       return res.status(400).json({
@@ -135,10 +139,17 @@ export async function addToTodo(req, res, next) {
     // New interaction
     const result = await pool.query(
       `INSERT INTO user_recipes_interaction
-         (user_id, local_recipe_id, api_recipe_id, api_recipe_title, api_recipe_image, en_todo_list, en_recetario)
-        VALUES ($1, $2, $3, $4, $5, TRUE, FALSE)
-        RETURNING *`,
-      [userId, local_recipe_id || null, api_recipe_id || null, title || null, image_url || null]
+        (user_id, local_recipe_id, api_recipe_id, api_recipe_title, api_recipe_image, api_recipe_category, en_todo_list, en_recetario)
+      VALUES ($1, $2, $3, $4, $5, $6, TRUE, FALSE)
+      RETURNING *`,
+      [
+        userId,
+        local_recipe_id || null,
+        api_recipe_id || null,
+        title || null,
+        image_url || null,
+        category || null,
+      ]
     );
 
     return res.status(201).json({ data: result.rows[0] });

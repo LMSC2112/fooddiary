@@ -63,14 +63,12 @@ beforeEach(() => {
 describe("GET /api/recipes", () => {
   it("returns 200 and a paginated data array without authentication", async () => {
     // Simulate count query + data query
-    mockQuery
-      .mockResolvedValueOnce({ rows: [{ count: "2" }] })
-      .mockResolvedValueOnce({
-        rows: [
-          { id: "r-1", title: "Pasta", category: "Pasta", author: "Chef Demo", source: "local" },
-          { id: "r-2", title: "Pizza", category: "Italian", author: "Chef Demo", source: "local" },
-        ],
-      });
+    mockQuery.mockResolvedValueOnce({ rows: [{ count: "2" }] }).mockResolvedValueOnce({
+      rows: [
+        { id: "r-1", title: "Pasta", category: "Pasta", author: "Chef Demo", source: "local" },
+        { id: "r-2", title: "Pizza", category: "Italian", author: "Chef Demo", source: "local" },
+      ],
+    });
 
     const res = await request(app).get("/api/recipes");
 
@@ -86,13 +84,15 @@ describe("GET /api/recipes", () => {
 // ─────────────────────────────────────────────────────────────────────────────
 describe("POST /api/recipes", () => {
   it("returns 401 when no JWT token is provided", async () => {
-    const res = await request(app).post("/api/recipes").send({
-      title: "Pasta Carbonara",
-      instructions: "Cook pasta...",
-      base_servings: 4,
-      serving_size: "Mediano",
-      ingredients: [{ name: "Pasta", base_quantity: 200, base_unit: "g" }],
-    });
+    const res = await request(app)
+      .post("/api/recipes")
+      .send({
+        title: "Pasta Carbonara",
+        instructions: "Cook pasta...",
+        base_servings: 4,
+        serving_size: "Mediano",
+        ingredients: [{ name: "Pasta", base_quantity: 200, base_unit: "g" }],
+      });
 
     // 401 Unauthorized — no token in headers
     expect(res.status).toBe(401);
@@ -116,15 +116,12 @@ describe("POST /api/recipes", () => {
   });
 
   it("returns 400 when required fields are missing", async () => {
-    const res = await request(app)
-      .post("/api/recipes")
-      .set("Authorization", AUTH_HEADER)
-      .send({
-        // title missing
-        instructions: "Cook pasta...",
-        base_servings: 4,
-        serving_size: "Mediano",
-      });
+    const res = await request(app).post("/api/recipes").set("Authorization", AUTH_HEADER).send({
+      // title missing
+      instructions: "Cook pasta...",
+      base_servings: 4,
+      serving_size: "Mediano",
+    });
 
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty("error");

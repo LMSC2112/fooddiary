@@ -1,12 +1,7 @@
 // backend/src/routes/auth.routes.js
 
 import { Router } from "express";
-import {
-  register,
-  login,
-  forgotPassword,
-  resetPassword,
-} from "../controllers/auth.controller.js";
+import { register, login, forgotPassword, resetPassword } from "../controllers/auth.controller.js";
 
 const router = Router();
 

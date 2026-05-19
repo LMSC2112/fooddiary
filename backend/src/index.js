@@ -14,12 +14,12 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 // ── Middleware ─────────────────────────────────────────────────────────────
-app.use(cors({
-  origin: process.env.NODE_ENV === "production"
-    ? "https://fooddiary.com"
-    : "http://localhost:80",
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: process.env.NODE_ENV === "production" ? "https://fooddiary.com" : "http://localhost:80",
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // ── Health check (required by rúbrica + Docker healthcheck) ───────────────

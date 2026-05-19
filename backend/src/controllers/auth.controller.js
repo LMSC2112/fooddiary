@@ -54,10 +54,9 @@ export async function login(req, res, next) {
       return res.status(400).json({ error: "Email and password are required." });
     }
 
-    const result = await pool.query(
-      "SELECT * FROM users WHERE email = $1",
-      [email.toLowerCase().trim()]
-    );
+    const result = await pool.query("SELECT * FROM users WHERE email = $1", [
+      email.toLowerCase().trim(),
+    ]);
 
     // Return 401 (not 404) — don't reveal whether email exists
     if (result.rows.length === 0) {
@@ -102,10 +101,9 @@ export async function forgotPassword(req, res, next) {
       return res.status(400).json({ error: "Email is required." });
     }
 
-    const result = await pool.query(
-      "SELECT id FROM users WHERE email = $1",
-      [email.toLowerCase().trim()]
-    );
+    const result = await pool.query("SELECT id FROM users WHERE email = $1", [
+      email.toLowerCase().trim(),
+    ]);
 
     // Always return 200 — don't reveal whether email is registered (security)
     if (result.rows.length === 0) {
@@ -188,9 +186,5 @@ export async function resetPassword(req, res, next) {
 // INTERNAL HELPER
 // ─────────────────────────────────────────────
 function signToken(user, expiresIn = process.env.JWT_EXPIRES_IN || "1d") {
-  return jwt.sign(
-    { userId: user.id, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn }
-  );
+  return jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn });
 }
