@@ -17,18 +17,18 @@ A full-stack recipe planning platform that transforms passive recipe browsing in
 
 ## Tech stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 18 + TypeScript + Vite |
-| Styling | Tailwind CSS |
-| Animations | Framer Motion |
-| i18n | react-i18next |
-| Backend | Node.js + Express |
-| Database | PostgreSQL 16 |
-| Auth | JWT + bcrypt |
-| Testing | Vitest + Supertest |
-| Infrastructure | Docker + Docker Compose |
-| CI | GitHub Actions |
+| Layer          | Technology                   |
+| -------------- | ---------------------------- |
+| Frontend       | React 18 + TypeScript + Vite |
+| Styling        | Tailwind CSS                 |
+| Animations     | Framer Motion                |
+| i18n           | react-i18next                |
+| Backend        | Node.js + Express            |
+| Database       | PostgreSQL 16                |
+| Auth           | JWT + bcrypt                 |
+| Testing        | Vitest + Supertest           |
+| Infrastructure | Docker + Docker Compose      |
+| CI             | GitHub Actions               |
 
 ---
 
@@ -41,6 +41,8 @@ You only need two tools installed on your machine:
 
 No Node.js, no npm, no PostgreSQL — Docker handles everything.
 
+> **Windows users:** Make sure Docker Desktop is fully started (Engine running, not just loading) before running any `docker compose` commands. On Windows with WSL2, Docker Desktop occasionally loses DNS resolution after a system restart — if containers can't reach the internet, restart Docker Desktop and try again.
+
 ---
 
 ## Local setup
@@ -48,8 +50,8 @@ No Node.js, no npm, no PostgreSQL — Docker handles everything.
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/fooddiary-monorepo.git
-cd fooddiary-monorepo
+git clone https://github.com/YOUR_USERNAME/fooddiary.git
+cd fooddiary
 ```
 
 ### 2. Create your environment file
@@ -79,35 +81,44 @@ JWT_EXPIRES_IN=7d
 ### 3. Start the application
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
-First run takes ~2–3 minutes while Docker downloads images and installs dependencies. Subsequent runs take ~20 seconds.
+First run takes ~3–5 minutes while Docker downloads images and installs dependencies. Subsequent runs take ~20 seconds.
+
+> **Note:** Use `docker compose` (with a space) instead of `docker-compose` (with a hyphen). Newer versions of Docker Desktop ship with Compose V2 which uses the space syntax.
 
 ### 4. Open the app
 
-| Service | URL |
-|---|---|
-| Frontend | http://localhost:80 |
-| Backend API | http://localhost:4000 |
+| Service      | URL                          |
+| ------------ | ---------------------------- |
+| Frontend     | http://localhost             |
+| Backend API  | http://localhost:4000        |
 | Health check | http://localhost:4000/health |
 
 ---
 
-## Demo credentials
+## Creating your account
 
-The database seeds a demo user on first boot:
+There is no pre-seeded demo account — register directly through the UI:
 
-| Field | Value |
-|---|---|
-| Email | `demo@fooddiary.com` |
-| Password | `password123` |
+1. Open `http://localhost`
+2. Click **Register** in the top right
+3. Fill in your name, email, and password (minimum 8 characters)
+4. You are logged in automatically after registering
 
-> **Note:** The seed password hash in `database/init.sql` is a placeholder. To use the demo account, register a new account through the UI or update the hash by running:
-> ```bash
-> node -e "const b=require('bcrypt');b.hash('password123',10).then(h=>console.log(h))"
-> ```
-> Then replace the hash value in `init.sql` before first boot.
+---
+
+## Resetting the database
+
+If you need a completely fresh database (e.g. after schema changes):
+
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+The `-v` flag removes the PostgreSQL volume. The database will be recreated from `database/init.sql` on next boot.
 
 ---
 
@@ -119,17 +130,17 @@ Tests run inside Node.js without Docker — you need Node 20+ installed locally 
 
 ```bash
 cd backend
-npm ci
+npm install
 npm test
 ```
 
-Expected output: **13 tests passing** across 4 suites (auth, recipes, 403 authorship rule, public endpoints).
+Expected output: **15 tests passing** across 4 suites (auth, recipes, 403 authorship rule, public endpoints).
 
 ### Frontend tests
 
 ```bash
 cd frontend
-npm ci
+npm install
 npm test
 ```
 
@@ -138,53 +149,71 @@ Expected output: **17 tests passing** across 5 suites (scale factor, fallback de
 ### Run all tests from the root
 
 ```bash
-cd backend && npm ci && npm test && cd ../frontend && npm ci && npm test
+cd backend && npm install && npm test && cd ../frontend && npm install && npm test
 ```
+
+---
+
+## Code formatting
+
+This project uses Prettier for consistent code style. Before pushing to GitHub, format all files from the project root:
+
+```bash
+npx prettier --write .
+```
+
+The CI pipeline runs `prettier --check` automatically on every push and will fail if any file is not properly formatted.
 
 ---
 
 ## API endpoints
 
 ### Auth
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| POST | `/api/auth/register` | — | Create account |
-| POST | `/api/auth/login` | — | Login, returns JWT |
-| POST | `/api/auth/forgot-password` | — | Request reset link |
-| POST | `/api/auth/reset-password` | — | Set new password |
+
+| Method | Endpoint                    | Auth | Description        |
+| ------ | --------------------------- | ---- | ------------------ |
+| POST   | `/api/auth/register`        | —    | Create account     |
+| POST   | `/api/auth/login`           | —    | Login, returns JWT |
+| POST   | `/api/auth/forgot-password` | —    | Request reset link |
+| POST   | `/api/auth/reset-password`  | —    | Set new password   |
 
 ### Recipes
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| GET | `/api/recipes?page=1&category=Chicken` | — | Paginated hybrid list |
-| GET | `/api/recipes/:id` | — | Recipe detail |
-| POST | `/api/recipes` | ✅ | Create local recipe |
-| PUT | `/api/recipes/:id` | ✅ | Update (author only — 403 otherwise) |
-| DELETE | `/api/recipes/:id` | ✅ | Delete (author only — 403 otherwise) |
+
+| Method | Endpoint                               | Auth | Description                          |
+| ------ | -------------------------------------- | ---- | ------------------------------------ |
+| GET    | `/api/recipes?page=1&category=Chicken` | —    | Paginated hybrid list                |
+| GET    | `/api/recipes/:id`                     | —    | Recipe detail                        |
+| POST   | `/api/recipes`                         | ✅   | Create local recipe                  |
+| PUT    | `/api/recipes/:id`                     | ✅   | Update (author only — 403 otherwise) |
+| DELETE | `/api/recipes/:id`                     | ✅   | Delete (author only — 403 otherwise) |
 
 ### Interactions
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| GET | `/api/interactions/todo` | ✅ | User's To-Do list |
-| GET | `/api/interactions/cookbook` | ✅ | User's Cookbook |
-| POST | `/api/interactions` | ✅ | Add recipe to To-Do |
-| PATCH | `/api/interactions/:id/complete` | ✅ | Cook decision modal |
-| DELETE | `/api/interactions/:id` | ✅ | Remove interaction |
+
+| Method | Endpoint                         | Auth | Description         |
+| ------ | -------------------------------- | ---- | ------------------- |
+| GET    | `/api/interactions/todo`         | ✅   | User's To-Do list   |
+| GET    | `/api/interactions/cookbook`     | ✅   | User's Cookbook     |
+| POST   | `/api/interactions`              | ✅   | Add recipe to To-Do |
+| PATCH  | `/api/interactions/:id/complete` | ✅   | Cook decision modal |
+| DELETE | `/api/interactions/:id`          | ✅   | Remove interaction  |
 
 ### System
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/health` | Returns `{ "status": "up" }` |
+
+| Method | Endpoint  | Description                  |
+| ------ | --------- | ---------------------------- |
+| GET    | `/health` | Returns `{ "status": "up" }` |
 
 ---
 
 ## Project structure
 
 ```
-fooddiary-monorepo/
+fooddiary/
 ├── .github/workflows/ci.yml   # GitHub Actions pipeline
+├── .prettierrc                 # Prettier formatting rules
 ├── database/init.sql           # Schema + seed data
 ├── backend/                    # Node.js + Express API
+│   ├── .dockerignore           # Excludes node_modules from Docker build
 │   └── src/
 │       ├── config/             # DB connection pool
 │       ├── controllers/        # Business logic
@@ -193,6 +222,8 @@ fooddiary-monorepo/
 │       ├── services/           # TheMealDB integration
 │       └── tests/              # Vitest + Supertest
 └── frontend/                   # React + TypeScript SPA
+    ├── .dockerignore           # Excludes node_modules from Docker build
+    ├── nginx.conf              # Nginx config with /api proxy and React Router support
     └── src/
         ├── components/         # Reusable UI atoms
         ├── context/            # Auth state (React Context)
@@ -209,11 +240,18 @@ fooddiary-monorepo/
 
 ```bash
 # Stop containers (keeps data)
-docker-compose down
+docker compose down
 
 # Stop and wipe the database volume (fresh start)
-docker-compose down -v
+docker compose down -v
 ```
+
+---
+
+## Known issues on Windows
+
+- **DNS resolution inside containers:** The `docker-compose.yml` includes explicit DNS servers (`8.8.8.8`) for the backend container. This is required on Windows with WSL2 to allow the backend to reach TheMealDB. If you see `wget: bad address` errors inside the container, restart Docker Desktop.
+- **bcrypt compilation:** The `.dockerignore` files in `backend/` and `frontend/` exclude `node_modules` from the Docker build context. This prevents bcrypt binaries compiled for Windows from being copied into the Linux container, which would cause a crash.
 
 ---
 
@@ -221,8 +259,8 @@ docker-compose down -v
 
 Every push to `main` or `develop` automatically runs:
 
-1. **Format check** — Prettier verifies code style (breaks build if violations found)
-2. **Backend tests** — Vitest runs auth and 403 authorship rule tests
-3. **Frontend tests** — Vitest runs the recipe calculator math tests
+1. **Format check** — Prettier verifies code style across all files (breaks build if violations found)
+2. **Backend tests** — Vitest runs auth and 403 authorship rule tests (15 tests)
+3. **Frontend tests** — Vitest runs the recipe calculator math tests (17 tests), only if backend passes
 
 View pipeline status in the **Actions** tab of the GitHub repository.
