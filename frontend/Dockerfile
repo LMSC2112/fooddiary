@@ -15,7 +15,7 @@ WORKDIR /app
 
 # Cache dependencies separately from source code
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # Copy source and compile
 COPY . .

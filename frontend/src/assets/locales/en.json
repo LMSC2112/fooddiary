@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Log out",
+    "myTodo": "My To-Do List",
+    "myCookbook": "My Cookbook"
+  },
+  "home": {
+    "title": "Discover Recipes",
+    "filterAll": "All Recipes",
+    "filterNew": "New Recipes",
+    "filterDiscarded": "Discarded Recipes",
+    "by": "By:",
+    "from": "From:",
+    "addToTodo": "Add to my To-Do list",
+    "discardedWarning": "Are you sure? You already cooked and discarded this recipe before.",
+    "tryAgain": "Yes, try again",
+    "cancel": "Cancel",
+    "empty": "No recipes found. Try a different category or search.",
+    "planned": "Planned on:",
+    "discarded": "Discarded on:"
+  },
+  "detail": {
+    "didYouCook": "Did you cook this today?",
+    "calculator": "Want more or fewer servings, or international/American units? Use our calculator!",
+    "servings": "Servings",
+    "units": "Units",
+    "metric": "Metric",
+    "american": "American",
+    "fallbackBanner": "This external recipe does not specify servings. A base of 1 serving has been set to enable the calculator.",
+    "ingredients": "Ingredients",
+    "instructions": "Instructions"
+  },
+  "modal": {
+    "title": "Great job, you finished this recipe!",
+    "subtitle": "Did you like the result? Save it to your virtual cookbook.",
+    "saveToCookbook": "Save to my cookbook",
+    "justRemove": "Just remove from To-Do list"
+  },
+  "todo": {
+    "title": "My To-Do List",
+    "empty": "Your planning list is empty today. Go discover some recipes!"
+  },
+  "cookbook": {
+    "title": "My Cookbook",
+    "empty": "Your cookbook is empty. Start cooking and save your favorites!",
+    "cookedOn": "Cooked on:"
+  },
+  "auth": {
+    "loginTitle": "Welcome back",
+    "registerTitle": "Create your account",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "rememberMe": "Remember me on this device",
+    "loginBtn": "Log in",
+    "registerBtn": "Create account",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "forgotPassword": "Forgot your password?"
+  },
+  "categories": {
+    "Beef": "Beef",
+    "Breakfast": "Breakfast",
+    "Chicken": "Chicken",
+    "Dessert": "Dessert",
+    "Goat": "Goat",
+    "Lamb": "Lamb",
+    "Miscellaneous": "Miscellaneous",
+    "Pasta": "Pasta",
+    "Pork": "Pork",
+    "Seafood": "Seafood",
+    "Side": "Side",
+    "Starter": "Starter",
+    "Vegan": "Vegan",
+    "Vegetarian": "Vegetarian"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "Connection error. Check your internet and try again.",
+    "unauthorized": "You need to log in to do that."
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page"
+  }
+}

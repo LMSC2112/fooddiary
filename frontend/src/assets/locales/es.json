@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar sesión",
+    "myTodo": "Mi lista pendiente",
+    "myCookbook": "Mi recetario"
+  },
+  "home": {
+    "title": "Descubre recetas",
+    "filterAll": "Todas las recetas",
+    "filterNew": "Recetas nuevas",
+    "filterDiscarded": "Recetas descartadas",
+    "by": "Por:",
+    "from": "De:",
+    "addToTodo": "Añadir a mi lista pendiente",
+    "discardedWarning": "¿Estás seguro? Ya cocinaste y descartaste esta receta antes.",
+    "tryAgain": "Sí, intentar de nuevo",
+    "cancel": "Cancelar",
+    "empty": "No se encontraron recetas. Intenta con otra categoría o búsqueda.",
+    "planned": "Planificada el:",
+    "discarded": "Descartada el:"
+  },
+  "detail": {
+    "didYouCook": "¿La cocinaste hoy?",
+    "calculator": "¿Quieres más o menos porciones, o unidades internacionales/americanas? ¡Usa nuestra calculadora!",
+    "servings": "Porciones",
+    "units": "Unidades",
+    "metric": "Métrico",
+    "american": "Americano",
+    "fallbackBanner": "Esta receta externa no especifica porciones. Se ha establecido una porción base de 1 para habilitar la calculadora.",
+    "ingredients": "Ingredientes",
+    "instructions": "Instrucciones"
+  },
+  "modal": {
+    "title": "¡Qué bien, finalizaste esta receta!",
+    "subtitle": "¿Te gustó el resultado? Guárdala en tu recetario virtual.",
+    "saveToCookbook": "Guardar en mi recetario",
+    "justRemove": "Solo quitar de la lista pendiente"
+  },
+  "todo": {
+    "title": "Mi lista pendiente",
+    "empty": "Tu lista de pendientes está vacía hoy. ¡Ve a descubrir algunas recetas!"
+  },
+  "cookbook": {
+    "title": "Mi recetario",
+    "empty": "Tu recetario está vacío. ¡Empieza a cocinar y guarda tus favoritos!",
+    "cookedOn": "Cocinada el:"
+  },
+  "auth": {
+    "loginTitle": "Bienvenido de vuelta",
+    "registerTitle": "Crea tu cuenta",
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "rememberMe": "Recordarme en este dispositivo",
+    "loginBtn": "Iniciar sesión",
+    "registerBtn": "Crear cuenta",
+    "noAccount": "¿No tienes una cuenta?",
+    "hasAccount": "¿Ya tienes una cuenta?",
+    "forgotPassword": "¿Olvidaste tu contraseña?"
+  },
+  "categories": {
+    "Beef": "Res",
+    "Breakfast": "Desayuno",
+    "Chicken": "Pollo",
+    "Dessert": "Postre",
+    "Goat": "Cabra",
+    "Lamb": "Cordero",
+    "Miscellaneous": "Varios",
+    "Pasta": "Pasta",
+    "Pork": "Cerdo",
+    "Seafood": "Mariscos",
+    "Side": "Acompañamiento",
+    "Starter": "Entrada",
+    "Vegan": "Vegano",
+    "Vegetarian": "Vegetariano"
+  },
+  "errors": {
+    "generic": "Algo salió mal. Por favor intenta de nuevo.",
+    "network": "Error de conexión. Revisa tu internet e intenta de nuevo.",
+    "unauthorized": "Necesitas iniciar sesión para hacer eso."
+  },
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "page": "Página"
+  }
+}

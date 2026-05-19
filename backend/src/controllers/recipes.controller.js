@@ -3,7 +3,11 @@
 // Enforces the Authorship Rule: 403 Forbidden if user edits/deletes others' recipes.
 
 import pool from "../config/db.js";
-import { fetchMealsByCategory, fetchMealById, searchMealsByName } from "../services/mealdb.service.js";
+import {
+  fetchMealsByCategory,
+  fetchMealById,
+  searchMealsByName,
+} from "../services/mealdb.service.js";
 
 const VALID_SERVING_SIZES = ["Grande", "Mediano", "Pequeño"];
 const PAGE_LIMIT = 30;
@@ -97,6 +101,17 @@ export async function getRecipes(req, res, next) {
 export async function getRecipeById(req, res, next) {
   try {
     const { id } = req.params;
+    // Validate UUID format before querying PostgreSQL
+    // MealDB IDs are numeric strings like "53085" — skip DB query for those
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+    if (!isUUID) {
+      const apiRecipe = await fetchMealById(id);
+      if (!apiRecipe) {
+        return res.status(404).json({ error: "Recipe not found." });
+      }
+      return res.status(200).json({ ...apiRecipe, authorLabel: "From: Public Library" });
+    }
 
     // Try local DB first
     const localResult = await pool.query(
@@ -147,7 +162,8 @@ export async function getRecipeById(req, res, next) {
 export async function createRecipe(req, res, next) {
   const client = await pool.connect();
   try {
-    const { title, instructions, base_servings, serving_size, category, image_url, ingredients } = req.body;
+    const { title, instructions, base_servings, serving_size, category, image_url, ingredients } =
+      req.body;
     const userId = req.user.userId;
 
     // ── Validation (400) ───────────────────────────────────────────────────
@@ -175,7 +191,15 @@ export async function createRecipe(req, res, next) {
       `INSERT INTO local_recipes (user_id, title, instructions, base_servings, serving_size, category, image_url)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [userId, title.trim(), instructions.trim(), base_servings, serving_size, category || "Miscellaneous", image_url || null]
+      [
+        userId,
+        title.trim(),
+        instructions.trim(),
+        base_servings,
+        serving_size,
+        category || "Miscellaneous",
+        image_url || null,
+      ]
     );
     const recipe = recipeResult.rows[0];
 
@@ -183,7 +207,9 @@ export async function createRecipe(req, res, next) {
     for (const ing of ingredients) {
       if (!ing.name || !ing.base_quantity || !ing.base_unit) {
         await client.query("ROLLBACK");
-        return res.status(400).json({ error: "Each ingredient needs name, base_quantity, and base_unit." });
+        return res
+          .status(400)
+          .json({ error: "Each ingredient needs name, base_quantity, and base_unit." });
       }
       await client.query(
         `INSERT INTO local_ingredients (recipe_id, name, base_quantity, base_unit)
@@ -213,13 +239,11 @@ export async function updateRecipe(req, res, next) {
   try {
     const { id } = req.params;
     const userId = req.user.userId;
-    const { title, instructions, base_servings, serving_size, category, image_url, ingredients } = req.body;
+    const { title, instructions, base_servings, serving_size, category, image_url, ingredients } =
+      req.body;
 
     // ── Authorship Rule ────────────────────────────────────────────────────
-    const ownerCheck = await client.query(
-      "SELECT user_id FROM local_recipes WHERE id = $1",
-      [id]
-    );
+    const ownerCheck = await client.query("SELECT user_id FROM local_recipes WHERE id = $1", [id]);
     if (ownerCheck.rows.length === 0) {
       return res.status(404).json({ error: "Recipe not found." });
     }
@@ -249,8 +273,15 @@ export async function updateRecipe(req, res, next) {
            image_url     = COALESCE($6, image_url)
        WHERE id = $7
        RETURNING *`,
-      [title || null, instructions || null, base_servings || null,
-       serving_size || null, category || null, image_url || null, id]
+      [
+        title || null,
+        instructions || null,
+        base_servings || null,
+        serving_size || null,
+        category || null,
+        image_url || null,
+        id,
+      ]
     );
 
     // If new ingredients provided, replace them all (simpler than diffing)
@@ -286,10 +317,7 @@ export async function deleteRecipe(req, res, next) {
     const userId = req.user.userId;
 
     // ── Authorship Rule ────────────────────────────────────────────────────
-    const ownerCheck = await pool.query(
-      "SELECT user_id FROM local_recipes WHERE id = $1",
-      [id]
-    );
+    const ownerCheck = await pool.query("SELECT user_id FROM local_recipes WHERE id = $1", [id]);
     if (ownerCheck.rows.length === 0) {
       return res.status(404).json({ error: "Recipe not found." });
     }

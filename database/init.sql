@@ -59,6 +59,8 @@ CREATE TABLE IF NOT EXISTS user_recipes_interaction (
   user_id             UUID         NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   local_recipe_id     UUID         NULL REFERENCES local_recipes(id) ON DELETE CASCADE,
   api_recipe_id       VARCHAR(50)  NULL,
+  api_recipe_title    VARCHAR(150) NULL,
+  api_recipe_image    VARCHAR(255) NULL,
   en_todo_list        BOOLEAN      NOT NULL DEFAULT FALSE,
   en_recetario        BOOLEAN      NOT NULL DEFAULT FALSE,
   created_at          TIMESTAMP    NOT NULL DEFAULT NOW(),

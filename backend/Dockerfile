@@ -16,7 +16,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Clean install — respects package-lock.json exactly
-RUN npm ci --only=production
+RUN npm install --only=production
 
 # Copy application source
 COPY . .
